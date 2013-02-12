@@ -2,11 +2,12 @@
 #
 # Table name: users
 #
-#  id         :integer          not null, primary key
-#  name       :string(255)
-#  email      :string(255)
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id              :integer          not null, primary key
+#  name            :string(255)
+#  email           :string(255)
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  password_digest :string(255)
 #
 
 class User < ActiveRecord::Base
@@ -14,8 +15,8 @@ class User < ActiveRecord::Base
   has_secure_password
 
 
-  before_save { |user| user.email = email.downcase }
-
+  # before_save { |user| user.email = email.downcase }
+	before_save { email.downcase! }
   validates :name, presence: true, length: { maximum: 50 }
   # VALID_EMAIL_REGEX = /\A[\W+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
