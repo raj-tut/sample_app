@@ -14,7 +14,7 @@ describe "Static Pages" do
 
   describe "Home Page" do
     before { visit root_path }
-    let(:heading)     { 'Sample App' }
+    let(:heading)     { 'One Family' }
     let(:page_title)  { '' }
     it_should_behave_like "all static_pages"
 
@@ -66,7 +66,7 @@ describe "Static Pages" do
     click_link "Home"
     click_link "Sign up now!"
     page.should have_selector 'title', text: full_title('Sign up')
-    click_link "sample app"
+    click_link "One Family"
     page.should have_selector 'title', text: full_title('Home') 
   end
 end
