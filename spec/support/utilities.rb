@@ -18,6 +18,7 @@ RSpec::Matchers.define :have_error_message do |message|
   match do |page|
     page.should have_selector('div.alert.alert-error', text: message)
   end
+end
 
 
 def sign_in(user)
@@ -29,5 +30,3 @@ def sign_in(user)
   cookies[:remember_token] = user.remember_token
 end
 
-
-end

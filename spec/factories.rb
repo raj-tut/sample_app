@@ -17,6 +17,12 @@
     	admin true
     end
   end
+
+  factory :micropost do
+    content "Lorem Ipsum"
+    user
+  end
+
 end
 	
 # end

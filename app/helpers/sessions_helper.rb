@@ -36,4 +36,21 @@ module SessionsHelper
 		session[:return_to] = request.url
 	end
 
+	def signed_in_user
+   	 unless signed_in?
+      store_location
+      redirect_to signin_url, notice: "Please sign in."
+   	 end
+ 	end
+
+ 	def signed_in_user
+      store_location  # calls this method to store the requested url
+      # before_filter in the users controller calls this method. For user edit and update
+      # actions, it checks to see if the user is logged-in or not.
+      redirect_to signin_url, notice: "Please sign in." unless signed_in?
+      # The code in the line above is the same as the one commented below.
+      # flash[:notice] = "Please sign in."
+      # redirect_to signin_url
+    end
+
 end

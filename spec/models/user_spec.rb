@@ -9,6 +9,7 @@
 #  updated_at      :datetime         not null
 #  password_digest :string(255)
 #  remember_token  :string(255)
+#  admin           :boolean          default(FALSE)
 #
 
 require 'spec_helper'
@@ -25,6 +26,8 @@ describe User do
    it { should respond_to(:password_confirmation) }
    it { should respond_to(:remember_token) }
    it { should respond_to(:authenticate) }
+   it { should respond_to(:microposts) }
+   it { should respond_to(:feed) }
 
 
    it { should be_valid }
@@ -95,7 +98,7 @@ describe User do
    end
 # ----------------authentication test begin------------------
 it { should respond_to(:authenticate) }
-describe "return value of authenticate method" do
+  describe "return value of authenticate method" do
   before { @user.save }
   let(:found_user) { User.find_by_email(@user.email) }
 
@@ -109,12 +112,51 @@ describe "return value of authenticate method" do
     it      { should_not == user_for_invalid_password }
     specify { user_for_invalid_password.should be_false }
   end
-end
+  end
 
-describe "with a password that's too short" do
+  describe "with a password that's too short" do
   before { @user.password = @user.password_confirmation = "a" * 5 }
   it     { should be_invalid }
-end
+  end
 # ----------------authentication test end------------------
 
+
+  describe "micropost associations" do
+    
+    before { @user.save }
+    let!(:older_micropost) do
+      FactoryGirl.create(:micropost, user: @user, created_at: 1.day.ago)
+    end
+    let!(:newer_micropost) do
+      FactoryGirl.create(:micropost, user: @user, created_at: 1.hour.ago)
+    end
+
+    it "should have the right microposts in the right order" do
+      @user.microposts.should == [newer_micropost, older_micropost]
+    end
+
+    it "should destroy associated microposts" do
+      microposts = @user.microposts.dup
+      @user.destroy
+      microposts.should_not be_empty
+      microposts.each do |micropost|
+        Micropost.find_by_id(micropost.id).should be_nil
+      end
+      # Alternative test to see if microposts got destroyed
+      # lambda do 
+      #   Micropost.find(micropost.id)
+      # end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    describe "status" do
+      let(:unfollowed_post) do 
+        FactoryGirl.create(:micropost, user: FactoryGirl.create(:user)) 
+      end
+
+      its(:feed) { should include(newer_micropost) }
+      its(:feed) { should include(older_micropost) }
+      its(:feed) { should_not include(unfollowed_post) }
+    end
+
+  end
 end	

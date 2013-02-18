@@ -27,7 +27,26 @@ describe "Static Pages" do
     #   visit '/static_pages/home'
     #   page.should_not have_selector('title', :text => '| Home')
     # end
+
+    describe "for signed-in users" do
+      let(:user) { FactoryGirl.create(:user) }
+      before do
+        FactoryGirl.create(:micropost, user: user, content: "Lorem Ipsum")
+        FactoryGirl.create(:micropost, user: user, content: "Rajesh Narayan")
+        sign_in user
+        visit root_path
+      end
+
+      it "should render the user's feed" do
+        user.feed.each do |item|
+          page.should have_selector("li##{item.id}", text: item.content)
+           # first # in li##{item.id} is Capybara syntax for a CSS id, whereas
+           # the second # is the beginning of a Ruby string interpolation #{}
+        end
+      end
+    end
   
+
   describe "Help Page" do
     before { visit help_path }
     let(:heading)     { 'Help' }

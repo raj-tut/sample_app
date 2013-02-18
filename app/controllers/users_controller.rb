@@ -11,6 +11,7 @@ class UsersController < ApplicationController
 
   def show
   	@user = User.find(params[:id])
+    @microposts = @user.microposts.paginate(page: params[:page])
   end
 
   def create
@@ -59,17 +60,7 @@ end
 
 private
 
-    def signed_in_user
-      store_location  # calls this method to store the requested url
-      # before_filter at the top of this page calls this method. For user edit and update
-      # actions, it checks to see if the user is logged-in or not.
-      redirect_to signin_url, notice: "Please sign in." unless signed_in?
-      # The code in the line above is the same as the one commented below.
-      # flash[:notice] = "Please sign in."
-      # redirect_to signin_url
-    end
-
-    def correct_user
+      def correct_user
       # This method redirects the user to home page 
       # if the current user is trying to edit another user.
       @user = User.find(params[:id])
